@@ -1,0 +1,10 @@
+policies:
+  - name: enforce-cosmosdb-encryption
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.enableKeyBasedMetadataEncryption
+        value: false
+    actions:
+      - type: set-encryption
+        enabled: true
