@@ -8,14 +8,15 @@ This repository contains a collection of **Harness Asset Governance** policies t
 
 | **Service**   | **Policy Name**                        | **Objective**                    | **Description**                                                                 |
 |---------------|---------------------------------------|---------------------------------|-----------------------------------------------------------------------------|
-| **Storage**    | Enforce Storage Encryption          | Data at Rest Encryption         | Ensures encryption at rest for all data in Azure Storage Accounts.            |
-|               | Restrict Public Access              | Secure Storage Account Access  | Disables public access to storage accounts, allowing only private access.   |
-|               | Configure Firewall Rules             | IP Access Control                | Limits access only to specified IP addresses to secure storage accounts.    |
-|               | Enable Soft Delete for Blobs        | Prevent Data Loss               | Protects against accidental deletions by retaining deleted blobs.            |
-|               | Enforce HTTPS Transfer Only         | Secure Data Transmission        | Forces communication with storage accounts to use HTTPS.                    |
-|               | Cleanup Inactive Blobs              | Optimize Storage Costs          | Automatically deletes blobs that haven't been accessed for more than 90 days. |
-|               | Lifecycle Management Policies        | Cost Optimization               | Moves data across storage tiers (Hot, Cool, Archive) according to lifecycle.  |
-|               | Storage Service Lifecycle Policy     | Data Tier Management             | Manages data across storage tiers automatically to optimize costs.          |
+| **Storage**    |sec-enforce-storage-encryption          | Data at Rest Encryption         | Ensures encryption at rest for all data in Azure Storage Accounts.            |
+|               | sec-restrict-public-access              | Secure Storage Account Access  | Disables public access to storage accounts, allowing only private access.   |
+|               | sec-enforce-storage-firewall-rules  | IP Access Control                | Limits access only to specified IP addresses to secure storage accounts.    |
+|               | cost-enable-soft-delete        | Prevent Data Loss               | Protects against accidental deletions by retaining deleted blobs.            |
+|               | sec-enforce-secure-transfer        | Secure Data Transmission        | Forces communication with storage accounts to use HTTPS.                    |
+|               | cost-delete-inactive-blobs             | Optimize Storage Costs          | Automatically deletes blobs that haven't been accessed for more than 90 days. |
+|               | cost-lifecycle-management-tiers      | Cost Optimization               | Moves data across storage tiers (Hot, Cool, Archive) according to lifecycle.  |
+|               | sec-enforce-vnet-integration         | Network Security                | Restricts storage and database access only within specified Virtual Networks.|
+|               | restrict-public-access               | Network Security                | Prevents unauthorized access by ensuring storage accounts are not accessible from public networks.|
 | **SQL Server** | Enforce Transparent Data Encryption  | Database Security                | Encrypts data at rest for Azure SQL Databases, maintaining compliance.      |
 |               | Restrict Public Access SQL          | Secure Database Access          | Prevents unauthorized public connections to SQL Databases.                 |
 |               | Geo-Replication for SQL              | High Availability                | Configures geo-replication across regions for disaster recovery.           |
