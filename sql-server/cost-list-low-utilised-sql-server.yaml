@@ -1,0 +1,13 @@
+policies:
+  - name: list-low-utilised-sql-server
+    resource: azure.sqlserver
+    description: |
+      List SQL servers with less than 10% average DTU consumption over last 72 hours
+    filters:
+      - type: metric
+        metric: dtu_consumption_percent
+        aggregation: average
+        op: lt
+        threshold: 10
+        timeframe: 72
+        filter:  "DatabaseResourceId eq '*'"
