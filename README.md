@@ -1,6 +1,6 @@
-# Azure Cloud Custodian Policies
+# Azure Harness Asset Governance Policies
 
-This repository contains a collection of **Cloud Custodian** policies to manage **Azure resources**, including Storage Accounts, SQL Servers, Cosmos DB, and more. These policies focus on enhancing security, optimizing costs, ensuring compliance, and maintaining operational efficiency.
+This repository contains a collection of **Harness Asset Governance** policies to manage **Azure resources**, including Storage Accounts, SQL Servers, Cosmos DB, and more. These policies focus on enhancing security, optimizing costs, ensuring compliance, and maintaining operational efficiency.
 
 ---
 
