@@ -39,8 +39,8 @@ This repository contains a collection of **Harness Asset Governance** policies t
 
 ## How to Use These Policies
 1. Clone this repository.
-2. Install Cloud Custodian CLI or integrate it with your CI/CD pipelines.
-3. Deploy these YAML policies to your Azure environment using the Custodian CLI.
+2. Create these policies in Harness Asset Governance
+3. Dry Run these policies on selected non-production Azure Accounts
 4. Customize IP addresses, retention periods, regions, and other parameters as needed for your infrastructure.
 
 ---
