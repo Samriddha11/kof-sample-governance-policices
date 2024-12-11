@@ -1,0 +1,13 @@
+policies:
+  - name: audit-sql-diagnostics
+    resource: azure.sqlserver
+    filters:
+      - type: value
+        key: properties.diagnosticSettings
+        value: null
+    actions:
+      - type: enable-logging
+        log_categories:
+          - "SQLAudit"
+          - "Errors"
+          - "Queries"

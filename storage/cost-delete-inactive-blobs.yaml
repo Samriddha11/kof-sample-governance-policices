@@ -1,0 +1,9 @@
+policies:
+  - name: delete-inactive-blobs
+    resource: azure.storage.blob
+    filters:
+      - type: jmespath
+        jmes: "properties.lastAccessTime"
+        value: "older-than-90-days"
+    actions:
+      - type: delete

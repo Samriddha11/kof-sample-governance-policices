@@ -1,0 +1,11 @@
+policies:
+  - name: enforce-vnet-integration
+    resource: azure.storage
+    filters:
+      - type: value
+        key: properties.virtualNetworkRules
+        value: null
+    actions:
+      - type: set-vnet-access
+        vnets:
+          - "10.0.0.0/16"

@@ -1,0 +1,11 @@
+policies:
+  - name: enable-soft-delete
+    resource: azure.storage
+    filters:
+      - type: value
+        key: properties.deleteRetentionPolicy.enabled
+        value: false
+    actions:
+      - type: set-soft-delete
+        enabled: true
+        retention_days: 90

@@ -1,0 +1,10 @@
+policies:
+  - name: enforce-provisioned-dtu-limits
+    resource: azure.sqlserver.database
+    filters:
+      - type: value
+        key: properties.dtu
+        value: null
+    actions:
+      - type: set-dtu
+        dtu: 50

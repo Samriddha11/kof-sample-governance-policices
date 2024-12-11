@@ -1,0 +1,10 @@
+policies:
+  - name: enforce-backup-retention
+    resource: azure.sqlserver.database
+    filters:
+      - type: value
+        key: properties.backupRetentionDays
+        value: null
+    actions:
+      - type: set-backup-retention
+        retention_days: 180

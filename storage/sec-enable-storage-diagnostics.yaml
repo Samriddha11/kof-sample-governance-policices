@@ -1,0 +1,13 @@
+policies:
+  - name: enable-storage-diagnostics
+    resource: azure.storage
+    filters:
+      - type: value
+        key: properties.diagnosticSettings
+        value: null
+    actions:
+      - type: enable-logging
+        log_categories:
+          - "File"
+          - "Blob"
+          - "Table"

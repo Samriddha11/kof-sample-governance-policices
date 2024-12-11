@@ -1,0 +1,10 @@
+policies:
+  - name: enforce-secure-transfer
+    resource: azure.storage
+    filters:
+      - type: value
+        key: properties.supportsHttpsTrafficOnly
+        value: false
+    actions:
+      - type: set-secure-transfer
+        enabled: true

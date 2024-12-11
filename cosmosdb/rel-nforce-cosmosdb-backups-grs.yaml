@@ -1,0 +1,10 @@
+policies:
+  - name: enforce-cosmosdb-backups-grs
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.backupPolicy.geoRedundantBackup
+        value: Disabled
+    actions:
+      - type: set-backup-policy
+        geo_redundant: true

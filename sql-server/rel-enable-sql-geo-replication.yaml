@@ -1,0 +1,10 @@
+policies:
+  - name: enable-sql-geo-replication
+    resource: azure.sqlserver
+    filters:
+      - type: value
+        key: properties.geoReplicationEnabled
+        value: null
+    actions:
+      - type: set-geo-replication
+        secondary_region: "East US"

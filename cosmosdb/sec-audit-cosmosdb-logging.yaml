@@ -1,0 +1,12 @@
+policies:
+  - name: audit-cosmosdb-logging
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.enableDiagnosticLogs
+        value: false
+    actions:
+      - type: enable-logging
+        log_categories:
+          - "AuditLogs"
+          - "Requests"

@@ -1,0 +1,10 @@
+policies:
+  - name: restrict-public-access
+    resource: azure.storage
+    filters:
+      - type: value
+        key: properties.publicNetworkAccess
+        value: Enabled
+    actions:
+      - type: set-public-access
+        enabled: false

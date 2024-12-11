@@ -1,0 +1,10 @@
+policies:
+  - name: enforce-provisioned-throughput
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.provisionedThroughput
+        value: null
+    actions:
+      - type: set-throughput
+        throughput: 400

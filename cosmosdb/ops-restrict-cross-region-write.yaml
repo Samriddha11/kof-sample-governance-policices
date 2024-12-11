@@ -1,0 +1,11 @@
+policies:
+  - name: restrict-cross-region-write
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.writeRegions
+        value: null
+    actions:
+      - type: set-write-region
+        regions:
+          - "East US"

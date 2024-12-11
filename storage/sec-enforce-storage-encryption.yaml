@@ -1,0 +1,11 @@
+policies:
+  - name: enforce-storage-encryption
+    resource: azure.storage
+    filters:
+      - type: value
+        key: properties.encryption.services.blob.enabled
+        value: false
+    actions:
+      - type: set-encryption
+        services:
+          blob: true

@@ -1,0 +1,10 @@
+policies:
+  - name: enforce-tde-on-sql
+    resource: azure.sqlserver
+    filters:
+      - type: value
+        key: properties.transparentDataEncryption.status
+        value: Disabled
+    actions:
+      - type: set-tde
+        enabled: true

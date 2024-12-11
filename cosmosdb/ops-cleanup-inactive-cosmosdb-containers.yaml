@@ -1,0 +1,9 @@
+policies:
+  - name: cleanup-inactive-cosmosdb-containers
+    resource: azure.cosmosdb.container
+    filters:
+      - type: jmespath
+        jmes: "properties.lastAccessTime"
+        value: "older-than-90-days"
+    actions:
+      - type: delete
