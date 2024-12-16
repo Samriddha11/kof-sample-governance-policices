@@ -1,0 +1,52 @@
+#Goal: Find storage accounts that store large amounts of data in the hot tier but have very low read access, 
+#suggesting that data could be moved to cooler or archive tiers for cost savings.
+
+#Checks if the storage account has lots of data (e.g., over 500GB) in the default (hot) tier.
+#Ensures that egress (read activity) is low, indicating that data might be suitable for cooler or archive storage.
+#Notifies team members to consider transitioning data to cheaper tiers.
+policies:
+  - name: storage-accounts-hot-tier-underutilized
+    resource: azure.storage
+    filters:
+      - type: metric
+        metric: Egress
+        op: lt
+        threshold: 1000      # e.g., less than 1000 bytes/requests over timeframe
+        timeframe: 72        # last 72 hours (3 days)
+      - type: metric
+        metric: UsedCapacity
+        op: gt
+        threshold: 500000000000 # e.g., > 500GB of data
+        timeframe: 72
+
+#Targets premium-tier storage accounts.
+#Checks if their transaction count is very low, indicating they may not need premium performance.
+#Notifies to consider downgrading to Standard tiers.
+policies:
+  - name: storage-premium-overprovisioned
+    resource: azure.storage
+    filters:
+      - type: value
+        key: sku.name
+        op: in
+        value:
+          - Premium_LRS
+          - Premium_ZRS
+      - type: metric
+        metric: Transactions
+        op: lt
+        threshold: 1000   # very low number of transactions
+        timeframe: 24
+
+#Checks for no transactions over a week.
+#Flags the storage account to consider deleting or moving data to archive storage.
+policies:
+  - name: storage-unused
+    resource: azure.storage
+    filters:
+      - type: metric
+        metric: Transactions
+        op: eq
+        threshold: 0
+        timeframe: 168  # No activity in the last 7 days
+
