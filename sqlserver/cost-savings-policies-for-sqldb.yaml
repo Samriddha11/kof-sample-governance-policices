@@ -1,0 +1,103 @@
+#Monitors metrics over the past 72 hours.
+#Identifies databases with zero usage.
+#Prompts the team to consider deleting them or scaling down to reduce costs.
+
+policies:
+  - name: sql-database-idle
+    resource: azure.sql-database
+    filters:
+      - type: metric
+        metric: dtu_consumption_percent # or cpu_percent depending on your metric configuration
+        op: eq
+        threshold: 0
+        timeframe: 180   # No activity in the last 72 hours
+      actions:
+      # Stop (deallocate) the SQL Server that match the criteria
+      - type: stop
+
+
+#low utilized sqlserver for more than 72 hours
+
+policies:
+  - name: list-low-utilised-sql-server
+    resource: azure.sqlserver
+    description: |
+      List SQL servers with less than 10% average DTU consumption over last 72 hours
+    filters:
+      - type: metric
+        metric: dtu_consumption_percent
+        aggregation: average
+        op: lt
+        threshold: 10
+        timeframe: 72
+        filter:  "DatabaseResourceId eq '*'"
+
+
+#Checks if long-term retention exceeds a certain threshold (e.g., more than 24 months).
+#Notifies an admin to consider shorter retention for cost savings.
+policies:
+  - name: sql-database-excessive-backup-retention
+    resource: azure.sql-database
+    filters:
+      - type: value
+        key: properties.longTermRetentionPolicy.monthlyRetention
+        op: gt
+        value: "P24M"  # More than 24 months retention
+    actions:
+      - type: notify
+        subject: "Excessive Backup Retention for Azure SQL Database"
+        to:
+          - backup-admin@example.com
+        template: default
+
+#Identifies databases not in a serverless tier.
+#Checks if their CPU usage is low, suggesting they could cost less if serverless compute is used.
+#Notifies a team member to review and consider reconfiguring the database.
+
+policies:
+  - name: sql-database-not-serverless
+    resource: azure.sql-database
+    filters:
+      - type: value
+        key: sku.tier
+        op: not-in
+        value:
+          - GeneralPurpose:Serverless
+          # Adjust value above per Azure’s naming conventions for serverless tiers
+      - type: metric
+        metric: cpu_percent
+        op: lt
+        threshold: 10
+        timeframe: 24
+
+#Targets databases on costly tiers.
+#Checks if CPU usage is very low over the last 24 hours.
+#Notifies admins to consider scaling down to a cheaper tier (e.g., Standard or General Purpose).
+
+policies:
+  - name: sql-database-overprovisioned
+    resource: azure.sql-database
+    filters:
+      - type: value
+        key: sku.tier
+        op: in
+        value:
+          - Premium
+          - BusinessCritical
+      - type: metric
+        metric: cpu_percent
+        op: lt
+        threshold: 5    # CPU usage under 5% over the timeframe is considered low
+        timeframe: 24
+
+#Flags databases without important cost-related tags.
+#Encourages tagging for better cost tracking and accountability.
+policies:
+  - name: sql-database-missing-cost-tags
+    resource: azure.sql-database
+    filters:
+      - or:
+        - "tag:cost-center": absent
+        - "tag:owner": absent
+
+
