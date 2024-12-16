@@ -1,9 +1,0 @@
-policies:
-  - name: unused-cosmosdb
-    resource: azure.cosmosdb
-    filters:
-      - type: metrics
-        metric: TotalRequests
-        op: less-than
-        threshold: 10
-        timeframe: 30
