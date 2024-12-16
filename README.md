@@ -1,56 +1,47 @@
-# Azure Harness Asset Governance Policies
+# Cosmos DB Governance Policies
 
-This repository contains a collection of **Harness Asset Governance** policies to manage **Azure resources**, including Storage Accounts, SQL Servers, Cosmos DB, and more. These policies focus on enhancing security, optimizing costs, ensuring compliance, and maintaining operational efficiency.
+This repository contains a set of governance policies targeting Azure Cosmos DB resources. Each policy leverages filters and metrics to identify opportunities for cost savings, improved resource tagging, right-sizing throughput, and other best practices.
 
----
+The table below provides an overview of all Cosmos DB policies, their purpose, and the related resource.
 
-## Table of Policies
-
-| **Service**   | **Policy Name**                        | **Objective**                    | **Description**                                                                 |
-|---------------|---------------------------------------|---------------------------------|-----------------------------------------------------------------------------|
-| **Storage**    |sec-enforce-storage-encryption          | Data at Rest Encryption         | Ensures encryption at rest for all data in Azure Storage Accounts.            |
-|               | sec-restrict-public-access              | Secure Storage Account Access  | Disables public access to storage accounts, allowing only private access.   |
-|               | sec-enforce-storage-firewall-rules  | IP Access Control                | Limits access only to specified IP addresses to secure storage accounts.    |
-|               | cost-enable-soft-delete        | Prevent Data Loss               | Protects against accidental deletions by retaining deleted blobs.            |
-|               | sec-enforce-secure-transfer        | Secure Data Transmission        | Forces communication with storage accounts to use HTTPS.                    |
-|               | cost-delete-inactive-blobs             | Optimize Storage Costs          | Automatically deletes blobs that haven't been accessed for more than 90 days. |
-|               | cost-lifecycle-management-tiers      | Cost Optimization               | Moves data across storage tiers (Hot, Cool, Archive) according to lifecycle.  |
-|               | sec-enforce-vnet-integration         | Network Security                | Restricts storage and database access only within specified Virtual Networks.|
-|               | restrict-public-access               | Network Security                | Prevents unauthorized access by ensuring storage accounts are not accessible from public networks.|
-| **SQL Server** | sec-enforce-tde-on-sql  | Database Security                | Encrypts data at rest for Azure SQL Databases, maintaining compliance.      |
-|               | sql-firewall-rules          | Secure Database Access          | Prevents unauthorized public connections to SQL Databases.                 |
-|               | rel-enable-sql-geo-replication              | High Availability                | Configures geo-replication across regions for disaster recovery.           |
-|               | cost-cleanup-inactive-sql-databases          | Cost Management                 | Removes unused databases and containers to reduce costs.                    |
-|               | sec-audit-sql-diagnostics               | Compliance and Auditing         | Logs all database operations and access activity.                           |
-|               | cost-list-low-utilised-sql-server       | Cost Optimization               | Identifies and removes low-utilized SQL servers to save costs.             |
-|               | cost-enforce-provisioned-dtu-limits     | Cost Control                    | Ensures proper provisioning of DTUs or vCores to meet performance needs.    |
-|               | sql-vnet-access-restriction         | Network Security                | Restricts database access only within specified Virtual Networks.|
-|               | op-enforce-backup-retention         | Prevent Data Loss               | Protects critical data by ensuring recovery is possible over extended periods.|
-| **Cosmos DB**  | cost-list-low-utilised-cosmodb  | Cost Efficiency                 | Identifies and optimizes low-utilized Cosmos DB instances to reduce costs.   |
-|               | rel-enforce-cosmosdb-backups-grs            | High Availability                | GRS ensures that data is available even during regional outages.          |
-|               | cost-cleanup-inactive-cosmosdb-containers           | Cost Optimization          | Reduces costs and clutter by removing unused containers    |
-|               | sec-audit-cosmosdb-logging      | Compliance and Auditing                    | Comprehensive logging ensures visibility into activities and operations on Cosmos DB.|
-|               |sec-cosmosdb-firewall-rules    | Secure Database Access          | Prevents unauthorized public connections to SQL Databases.                 |
-|               |sec-enforce-cosmosdb-encryption          | Data at Rest Encryption         | Ensures encryption at rest for all data in CosmosDB           |
-|               |perf-enforce-provisioned-throughput           | Performance Optimization                              | Helps maintain predictable costs and better performance by ensuring provisioning meets workload requirements.|
-|               |cost-restrict-cross-region-write              |Cost and Performance Optimization |Minimizes latency and operational complexity by controlling write operations in a preferred region.
+| Policy Name                          | Resource          | Description                                                                                                                                              |
+|--------------------------------------|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| cosmosdb-underutilized               | azure.cosmosdb    | Find Cosmos DB accounts with high provisioned throughput but low actual usage, highlighting opportunities to reduce RU capacity and lower costs.         |
+| cosmosdb-unused                      | azure.cosmosdb    | Check for zero request units over the past week to identify unused Cosmos DB accounts that may be candidates for deprovisioning or cost optimization.     |
+| cosmosdb-analytical-store-not-used   | azure.cosmosdb    | Identify accounts enabled with analytical store but with very low request units, prompting a review to disable or reconfigure to save costs.             |
+| cosmosdb-low-change-continuous-backup| azure.cosmosdb    | Find accounts on continuous backup with minimal write activity, suggesting switching to periodic backup for cost reduction.                              |
+| cosmosdb-missing-cost-tags           | azure.cosmosdb    | Flag Cosmos DB accounts missing cost-related tags, encouraging better cost allocation and transparency.                                                  |
+| cosmosdb-inactive                    | azure.cosmosdb    | Identify Cosmos DB accounts with low total requests over the last 72 hours, indicating potentially inactive or underutilized resources.                  |
+| cosmosdb-not-using-autoscale         | azure.cosmosdb    | Find Cosmos DB accounts not leveraging autoscale despite low usage, prompting consideration to enable autoscale and optimize cost.                       |
+| list-low-utilised-cosmodb            | azure.cosmosdb    | List all Cosmos DB accounts with low utilization (based on low request counts in the last 72 hours) for potential cost optimization actions.              |
+| restrict-cross-region-write          | azure.cosmosdb    | Restrict cross-region writes by ensuring there are no write regions set and enforcing a specific region if needed.                                       |
+| cosmosdb-multi-region-low-usage      | azure.cosmosdb    | Identify multi-region Cosmos DB accounts with low request units, prompting reviews to remove unnecessary regions and reduce costs.                       |
 
 ---
 
-## How to Use These Policies
-1. Clone this repository.
-2. Create these policies in Harness Asset Governance
-3. Dry Run these policies on selected non-production Azure Accounts
-4. Customize IP addresses, retention periods, regions, and other parameters as needed for your infrastructure.
+## Additional Policies for Azure SQL Databases and SQL Servers
+
+In addition to the Cosmos DB policies, this repository also includes policies for Azure SQL Databases and SQL Servers. These policies focus on identifying idle or underutilized databases, encouraging the use of cost-effective tiers, ensuring proper tagging, and prompting adjustments to retention policies.
+
+| Policy Name                             | Resource            | Description                                                                                                                   |
+|-----------------------------------------|---------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| sql-database-idle                       | azure.sql-database  | Monitors metrics over the past 72 hours, identifies databases with zero usage, and suggests deleting or scaling down.         |
+| list-low-utilised-sql-server            | azure.sqlserver     | Lists SQL servers with less than 10% average DTU consumption over the last 72 hours to find opportunities for cost reduction.  |
+| sql-database-excessive-backup-retention | azure.sql-database  | Checks if long-term retention exceeds 24 months, notifies admin to consider shorter retention for cost savings.               |
+| sql-database-not-serverless             | azure.sql-database  | Identifies databases not in a serverless tier that have low CPU usage, prompting a review to consider moving to serverless.    |
+| sql-database-overprovisioned            | azure.sql-database  | Targets databases on costly tiers with very low CPU usage, suggesting scaling down to a cheaper tier for cost optimization.    |
+| sql-database-missing-cost-tags          | azure.sql-database  | Flags databases without important cost-related tags, encouraging tagging to improve cost tracking and accountability.         |
 
 ---
 
-## Contributing
-We welcome contributions! If you have new policies or ideas, submit a pull request or open an issue.
+## Additional Policies for Azure Storage Accounts
 
-For questions, contact [Your Information].
+This repository also includes policies for Azure Storage accounts. These policies target opportunities to move data to cheaper tiers, downgrade premium tiers when not needed, and identify storage accounts that appear unused.
 
----
+| Policy Name                         | Resource       | Description                                                                                                                                      |
+|-------------------------------------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| storage-accounts-hot-tier-underutilized | azure.storage | Finds storage accounts with large data volumes in the hot tier but very low read access, suggesting a move to cooler or archive tiers to save cost. |
+| storage-premium-overprovisioned     | azure.storage  | Targets premium-tier storage accounts with very low transaction counts, recommending downgrading to Standard tiers.                              |
+| storage-unused                      | azure.storage  | Checks for no transactions over the last 7 days, prompting consideration of deleting the storage account or archiving its data.                  |
 
-## License
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+**Note:** The policies are defined in YAML files within this repository. Each policy includes resource targets, filters, and in some cases, actions to take. Adjust the thresholds and filtering criteria as needed to align with your organizational standards and cost optimization goals.
