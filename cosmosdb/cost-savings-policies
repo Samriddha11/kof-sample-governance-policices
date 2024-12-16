@@ -1,0 +1,152 @@
+#Find Cosmos DB accounts that are provisioned for high throughput but show low actual usage, potentially allowing cost savings by reducing RU capacity.
+policies:
+  - name: cosmosdb-underutilized
+    resource: azure.cosmosdb
+    filters:
+      - type: metric
+        metric: TotalRequestUnits
+        op: lt
+        threshold: 1000
+        timeframe: 24
+
+
+#Checks for zero request units over the past week.
+policies:
+  - name: cosmosdb-unused
+    resource: azure.cosmosdb
+    filters:
+      - type: metric
+        metric: TotalRequestUnits
+        op: eq
+        threshold: 0
+        timeframe: 168   # 168 hours = 7 days
+
+
+#Checks for analytical store capability.
+#Monitors if it’s underutilized (very low request units).
+#Notifies so that you can disable or reconfigure the analytical store.
+
+  - name: cosmosdb-analytical-store-not-used
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.capabilities[*].name
+        op: in
+        value:
+          - "EnableStorageAnalytics"
+      - type: metric
+        metric: TotalRequestUnits
+        op: lt
+        threshold: 100   # Very low RU usage for analytical queries
+        timeframe: 24
+
+
+#Identifies accounts on continuous backup with minimal write activity.
+#Suggests switching to a periodic backup policy to cut costs.
+
+policies:
+  - name: cosmosdb-low-change-continuous-backup
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.backupPolicy.type
+        op: eq
+        value: "Continuous"
+      - type: metric
+        metric: WriteRequests
+        op: lt
+        threshold: 1000
+        timeframe: 24
+
+
+#Flags Cosmos DB accounts lacking certain tags.
+#Encourages tagging resources, improving cost allocation and transparency. This indirectly supports cost optimization by making cost data more actionable.
+
+policies:
+  - name: cosmosdb-missing-cost-tags
+    resource: azure.cosmosdb
+    filters:
+      - or:
+        - "tag:cost-center": absent
+        - "tag:owner": absent
+
+#This policy will find all CosmosDB with 1000 or less total requests over the last 72 hours
+policies:
+  - name: cosmosdb-inactive
+    resource: azure.cosmosdb
+    filters:
+      - type: metric
+        metric: TotalRequests
+        op: le
+        aggregation: total
+        threshold: 1000
+        timeframe: 72
+
+#Finds Cosmos DB accounts without the autoscale capability.
+#Ensures these accounts have relatively low actual usage compared to their provisioned throughput.
+#Notifies your team to consider enabling autoscale to save on unused capacity.
+
+policies:
+  - name: cosmosdb-not-using-autoscale
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.capabilities[*].name
+        op: not-in
+        value_type: swap
+        value: "EnableAutoScale"
+      - type: metric
+        metric: TotalRequestUnits
+        op: lt
+        threshold: 5000
+        timeframe: 24
+
+#list all low utilized cosmodb
+
+policies:
+  - name:  list-low-utilised-cosmodb
+    resource: azure.cosmosdb
+    description: |
+      List low utilised cosmosDb based on total requests in last 72 hours
+    filters:
+      - type: metric
+        metric: TotalRequests
+        op: le
+        aggregation: total
+        threshold: 1000
+        timeframe: 72
+
+        
+# restrict Cross region replication
+
+  policies:
+  - name: restrict-cross-region-write
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.writeRegions
+        value: null
+    actions:
+      - type: set-write-region
+        regions:
+          - "East US"
+
+#Finds accounts spanning multiple regions.
+#Checks if usage (RUs) is minimal, indicating the extra regions may not be needed.
+#Prompts cost optimization reviews to remove unnecessary regions.
+
+policies:
+  - name: cosmosdb-multi-region-low-usage
+    resource: azure.cosmosdb
+    filters:
+      - type: value
+        key: properties.locations
+        op: gt
+        value: 1
+      - type: metric
+        metric: TotalRequestUnits
+        op: lt
+        threshold: 1000
+        timeframe: 24
+
+
