@@ -7,7 +7,7 @@ policies:
     resource: azure.sql-database
     filters:
       - type: metric
-        metric: dtu_consumption_percent # or cpu_percent depending on your metric configuration
+        metric: cpu_percent # or cpu_percent depending on your metric configuration
         op: eq
         threshold: 0
         timeframe: 180   # No activity in the last 72 hours
