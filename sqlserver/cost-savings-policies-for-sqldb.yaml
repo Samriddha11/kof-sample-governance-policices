@@ -43,12 +43,6 @@ policies:
         key: properties.longTermRetentionPolicy.monthlyRetention
         op: gt
         value: "P24M"  # More than 24 months retention
-    actions:
-      - type: notify
-        subject: "Excessive Backup Retention for Azure SQL Database"
-        to:
-          - backup-admin@example.com
-        template: default
 
 #Identifies databases not in a serverless tier.
 #Checks if their CPU usage is low, suggesting they could cost less if serverless compute is used.
