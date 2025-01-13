@@ -126,10 +126,7 @@ policies:
       - type: value
         key: properties.writeRegions
         value: null
-    actions:
-      - type: set-write-region
-        regions:
-          - "East US"
+
 
 #Finds accounts spanning multiple regions.
 #Checks if usage (RUs) is minimal, indicating the extra regions may not be needed.
